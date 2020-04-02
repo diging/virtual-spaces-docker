@@ -12,9 +12,10 @@ services:
     env_file:
       - ./config/db.env
   vspace:
-    build:
-        context: ./VSpace
-        dockerfile: Dockerfile
+    image: digingasu/virtual-spaces:v0.10
+    #build:
+    #    context: ./VSpace
+    #    dockerfile: Dockerfile
     ports:
       - "8088:8080"
     networks:
