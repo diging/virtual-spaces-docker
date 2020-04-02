@@ -1,0 +1,16 @@
+db_driver=com.mysql.jdbc.Driver
+db_url=jdbc:mysql://db:3306/vspace?serverTimezone=UTC
+db_user=vspace
+db_password=vspace
+
+email_user=test
+email_password=test
+email_host=localhost
+email_port=25
+email_from=from@email.address
+app_url=http://localhost:8081/vspace
+
+uploads_path=/usr/local/tomcat/data/files/
+
+hibernate_show_sql=false
+admin_username=admin

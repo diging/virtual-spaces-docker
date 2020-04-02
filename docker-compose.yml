@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  db:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - vspace-network
+    env_file:
+      - ./config/db.env
+  vspace:
+    build:
+        context: ./VSpace
+        dockerfile: Dockerfile
+    ports:
+      - "8088:8080"
+    networks:
+      - vspace-network
+    volumes:
+      - vspace-data:/usr/local/tomcat/data
+    env_file:
+      - ./config/vspace.env
+    depends_on:
+      - "db"
+
+networks:
+  vspace-network:
+
+volumes:
+  db-data:
+    external: true
+  vspace-data:
+    external: true
