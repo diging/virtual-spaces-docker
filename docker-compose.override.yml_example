@@ -1,17 +1,36 @@
 version: "3.7"
 
 services:
-#  vspace:
+  vspace:
 #    build:
 #        context: ./VSpace
 #        dockerfile: Dockerfile
 #    ports:
 #      - "8088:8080"
+    labels:
+      # enable traefik proxy for this container
+      - "traefik.enable=true"
+      # create router for our hostname
+      - "traefik.http.routers.vspace.rule=Host(`${VIRTUAL_HOST:?error_missing_hostname}`)"
+      - "traefik.http.routers.vspace.tls=true"
 
   proxy:
+    image: traefik:v2.2
+    restart: always
     ports:
+      - "80:80"
+      - "443:443"
       # traefik dashboard
       - "8080:8080"
+    command: 
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--api.insecure=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.websecure.address=:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
 volumes:
   db-data:
