@@ -7,28 +7,34 @@ services:
     restart: always
     volumes:
       - db-data:/var/lib/mysql
-    networks:
-      - vspace-network
     env_file:
       - ./config/db.env
+
   vspace:
     image: digingasu/virtual-spaces:v0.10
-    #build:
-    #    context: ./VSpace
-    #    dockerfile: Dockerfile
-    ports:
-      - "8088:8080"
-    networks:
-      - vspace-network
+    restart: always
     volumes:
       - vspace-data:/usr/local/tomcat/data
     env_file:
       - ./config/vspace.env
+    labels:
+      # enable traefik proxy for this container
+      - "traefik.enable=true"
+      # create router for our hostname
+      - "traefik.http.routers.vspace.rule=Host(`${VIRTUAL_HOST:?error_missing_hostname}`)"
     depends_on:
       - "db"
 
-networks:
-  vspace-network:
+  proxy:
+    image: traefik:v2.2
+    restart: always
+    command: --api.insecure=true --providers.docker --providers.docker.exposedbydefault=false
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
 volumes:
   db-data:

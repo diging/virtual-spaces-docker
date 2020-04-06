@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+#  vspace:
+#    build:
+#        context: ./VSpace
+#        dockerfile: Dockerfile
+#    ports:
+#      - "8088:8080"
+
+  proxy:
+    ports:
+      # traefik dashboard
+      - "8080:8080"
+
+volumes:
+  db-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: "${PWD}/data/db"
+      o: bind
+      
+  vspace-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: "${PWD}/data/vspace"
+      o: bind  
