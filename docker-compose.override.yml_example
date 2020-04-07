@@ -11,8 +11,10 @@ services:
       # enable traefik proxy for this container
       - "traefik.enable=true"
       # create router for our hostname
-      - "traefik.http.routers.vspace.rule=Host(`${VIRTUAL_HOST:?error_missing_hostname}`)"
+      - "traefik.http.routers.vspace.rule=Host(`vspaces.example.com`)"
+      - "traefik.http.routers.vspace.entrypoints=websecure"
       - "traefik.http.routers.vspace.tls=true"
+      - "traefik.http.routers.vspace.tls.certresolver=leresolver"
 
   proxy:
     image: traefik:v2.2
@@ -21,7 +23,7 @@ services:
       - "80:80"
       - "443:443"
       # traefik dashboard
-      - "8080:8080"
+      #- "8080:8080"
     command: 
       - "--providers.docker"
       - "--providers.docker.exposedbydefault=false"
@@ -29,8 +31,13 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.leresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.leresolver.acme.email=admin@example.com"
+      - "--certificatesresolvers.leresolver.acme.storage=/letsencrypt/acme.json"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "letsencrypt-data:/letsencrypt"
 
 volumes:
   db-data:
@@ -45,4 +52,11 @@ volumes:
     driver_opts:
       type: none
       device: "${PWD}/data/vspace"
+      o: bind  
+      
+  letsencrypt-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: "${PWD}/data/letsencrypt"
       o: bind  
