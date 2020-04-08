@@ -3,7 +3,7 @@ version: "3.7"
 services:
   db:
     image: mysql:5.7
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password --lower_case_table_names=1
     restart: always
     volumes:
       - db-data:/var/lib/mysql
@@ -11,7 +11,8 @@ services:
       - ./config/db.env
 
   vspace:
-    image: digingasu/virtual-spaces:v0.10
+    image: digingasu/virtual-spaces:latest
+    #image: digingasu/virtual-spaces:deployable-latest
     restart: always
     volumes:
       - vspace-data:/usr/local/tomcat/data
