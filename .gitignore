@@ -1,1 +1,5 @@
 .DS_Store
+/.env
+/.project
+/docker-compose.override.yml
+/data/
